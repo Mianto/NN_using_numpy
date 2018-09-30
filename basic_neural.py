@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.neural_network import MLPClassifier
 
 np.random.seed(17)
 
@@ -32,7 +33,7 @@ def initialize_parameters(X, Y):
     params['b1'] = np.zeros((n_h, 1))
 
     params['W2'] = np.random.randn(n_y, n_h)
-    params['b2'] = np.zeros((n_y, 1))
+    params['b2'] = np.zeros((1, n_y))
 
     print(params['W2'].shape)
 
@@ -189,8 +190,16 @@ if __name__ == '__main__':
 
     X = np.array([[0, 0, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1]])
     Y = np.array([[0], [0], [1], [1]])
-
     params = training(X.T, Y.T)
 
+    clf = MLPClassifier(solver='lbfgs', alpha=0,
+                        hidden_layer_sizes=5, activation='logistic')
+    clf.fit(X, Y)
+
     print(test(X.T, params))
-    
+    print(clf.predict(X))
+
+    for i, coeff in enumerate(clf.coefs_):
+        assert coeff.shape == params['W'+str(i + 1)].T.shape
+
+
